@@ -39,6 +39,7 @@
       v-if="editPopup.show"
       :item="editPopup.item"
       :type="editPopup.type"
+      :darkMode="darkMode"
       @save="saveEditedItem"
       @cancel="hideEditPopup"
       @delete="deleteItem"

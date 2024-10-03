@@ -6,8 +6,28 @@
       alt="Logo Image"
     />
   </div>
+  <div class="form-check form-switch mb-3">
+    <input
+      class="form-check-input"
+      type="checkbox"
+      id="darkModeToggle"
+      v-model="darkMode"
+    />
+    <label class="form-check-label" for="darkModeToggle">Dark Mode</label>
+  </div>
   <div class="mt-3">Step 1: Import a factory config</div>
-  <input type="file" id="jsonFileInput" accept=".json" class="form-control" />
+  <div class="custom-file-upload">
+    <input
+      type="file"
+      id="jsonFileInput"
+      accept=".json"
+      class="form-control d-none"
+    />
+    <button class="btn btn-secondary w-100" id="customFileUploadBtn">
+      Choose File
+    </button>
+    <span id="fileNameDisplay" class="mt-2 d-block"></span>
+  </div>
   <button class="btn btn-primary mt-3" @click="uploadJSON">Upload JSON</button>
 
   <div class="mt-3"><h3>OR</h3></div>

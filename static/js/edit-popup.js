@@ -22,7 +22,7 @@ Vue.component('edit-popup', {
     }
   },
   template: `
-    <div class="edit-popup">
+    <div class="edit-popup" :class="{ 'dark-mode': darkMode }">
       <div class="edit-popup-content">
         <h3>Edit {{ type }}</h3>
         <template v-if="type === 'inventory'">

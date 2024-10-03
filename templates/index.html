@@ -14,7 +14,7 @@
     />
   </head>
   <body>
-    <div id="app" class="d-flex">
+    <div id="app" class="d-flex" :class="{ 'dark-mode': darkMode }">
       <img
         id="corner-image"
         src="{{ url_for('static', filename='image/vel.png') }}"
@@ -50,6 +50,20 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/interactjs/dist/interact.min.js"></script>
+    <script
+      type="module"
+      src="{{ url_for('static', filename='js/factory-designer.js') }}"
+    ></script>
+    <script>
+      // Add this before the Vue instance is created
+      window.imageUrls = {
+        velLight: "{{ url_for('static', filename='image/vel.png') }}",
+        velDark: "{{ url_for('static', filename='image/vel-white.png') }}",
+        logoLight: "{{ url_for('static', filename='image/logo.png') }}",
+        logoDark: "{{ url_for('static', filename='image/logo-white.png') }}",
+      };
+    </script>
+
     <script
       type="module"
       src="{{ url_for('static', filename='js/factory-designer.js') }}"
