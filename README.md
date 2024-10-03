@@ -15,7 +15,7 @@ FlowForge is a web-based factory simulation and optimization tool that allows us
 
 1. Clone the repository:
    ```
-   git clone https://github.com/your-username/flowforge.git
+   git clone https://github.com/AnirbanGhosh21/flowforge.git
    ```
 
 2. Install dependencies:
