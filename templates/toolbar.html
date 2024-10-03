@@ -1,0 +1,445 @@
+<div id="toolbar" class="bg-light p-3 overflow-auto" style="width: 300px">
+  <div id="logo-container" class="flex-shrink-0">
+    <img
+      id="logo-image"
+      src="{{ url_for('static', filename='image/logo.png') }}"
+      alt="Logo Image"
+    />
+  </div>
+  <div class="mt-3">Step 1: Import a factory config</div>
+  <input type="file" id="jsonFileInput" accept=".json" class="form-control" />
+  <button class="btn btn-primary mt-3" @click="uploadJSON">Upload JSON</button>
+
+  <div class="mt-3"><h3>OR</h3></div>
+
+  <div class="mt-3">Create your own</div>
+
+  <div class="accordion" id="factoryAccordion">
+    <!-- Inventory accordion item -->
+    <div class="accordion-item">
+      <h2 class="accordion-header">
+        <button
+          class="accordion-button"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#inventoryCollapse"
+        >
+          Inventory
+        </button>
+      </h2>
+      <div
+        id="inventoryCollapse"
+        class="accordion-collapse collapse show"
+        data-bs-parent="#factoryAccordion"
+      >
+        <div class="accordion-body">
+          <div class="input-group mb-3">
+            <input
+              v-model="newItem"
+              type="text"
+              class="form-control"
+              placeholder="Add item"
+            />
+            <button
+              class="btn btn-primary"
+              type="button"
+              @click="addInventoryItem"
+            >
+              Add
+            </button>
+          </div>
+          <ul class="list-group">
+            <li v-for="item in inventory" :key="item" class="list-group-item">
+              {% raw %}{{ item }}{% endraw %}
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Assembly Stations accordion item -->
+    <div class="accordion-item">
+      <h2 class="accordion-header">
+        <button
+          class="accordion-button collapsed"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#stationsCollapse"
+        >
+          Assembly Stations
+        </button>
+      </h2>
+      <div
+        id="stationsCollapse"
+        class="accordion-collapse collapse"
+        data-bs-parent="#factoryAccordion"
+      >
+        <div class="accordion-body">
+          <div class="mb-3">
+            <label for="stationName" class="form-label">Station Name</label>
+            <input
+              v-model="newStation.name"
+              type="text"
+              class="form-control"
+              id="stationName"
+              placeholder="Enter station name"
+            />
+          </div>
+          <div class="mb-3">
+            <label for="processingTime" class="form-label"
+              >Processing Time</label
+            >
+            <input
+              v-model.number="newStation.processingTime"
+              type="number"
+              class="form-control"
+              id="processingTime"
+              placeholder="Enter processing time"
+              min="0"
+            />
+          </div>
+          <div class="mb-3">
+            <label for="outputName" class="form-label">Output Name</label>
+            <input
+              v-model="newStation.outputName"
+              type="text"
+              class="form-control"
+              id="outputName"
+              placeholder="Enter output name"
+            />
+          </div>
+          <div class="mb-3">
+            <label for="processingCapacity" class="form-label"
+              >Processing Capacity</label
+            >
+            <input
+              v-model.number="newStation.processingCapacity"
+              type="number"
+              class="form-control"
+              id="processingCapacity"
+              placeholder="Enter processing capacity"
+              min="1"
+            />
+          </div>
+          <div class="mb-3">
+            <label for="complexity" class="form-label">Complexity (0-1)</label>
+            <input
+              v-model.number="newStation.complexity"
+              type="range"
+              class="form-range"
+              id="complexity"
+              min="0"
+              max="1"
+              step="0.1"
+            />
+            <small class="form-text text-muted"
+              >{% raw %}Current value: {{ newStation.complexity.toFixed(1) }}{%
+              endraw %}</small
+            >
+          </div>
+          <button class="btn btn-primary mt-3" @click="addAssemblyStation">
+            Add Assembly Station
+          </button>
+
+          <ul class="list-group">
+            <li
+              v-for="station in assemblyStations"
+              :key="station.name"
+              class="list-group-item"
+            >
+              <h5>{% raw %}{{ station.name }}{% endraw %}</h5>
+              <p>
+                Processing Time: {% raw %}{{ station.processingTime }}{% endraw
+                %}
+              </p>
+              <p>Output: {% raw %}{{ station.outputName }}{% endraw %}</p>
+              <p>
+                Processing Capacity: {% raw %}{{ station.processingCapacity }}{%
+                endraw %}
+              </p>
+              <p>
+                Complexity: {% raw %}{{ station.complexity.toFixed(1) }}{%
+                endraw %}
+              </p>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Connections accordion item -->
+    <div class="accordion-item">
+      <h2 class="accordion-header">
+        <button
+          class="accordion-button collapsed"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#connectionsCollapse"
+        >
+          Connections
+        </button>
+      </h2>
+      <div
+        id="connectionsCollapse"
+        class="accordion-collapse collapse"
+        data-bs-parent="#factoryAccordion"
+      >
+        <div class="accordion-body">
+          <div class="mb-3">
+            <label for="connectionFrom" class="form-label">From</label>
+            <select
+              v-model="newConnection.from"
+              class="form-select"
+              id="connectionFrom"
+            >
+              <option value="">Select source</option>
+              <option v-for="item in inventory" :value="item">
+                {% raw %}{{ item }}{% endraw %}
+              </option>
+              <option v-for="station in assemblyStations" :value="station.name">
+                {% raw %}{{ station.name }}{% endraw %}
+              </option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label for="connectionTo" class="form-label">To</label>
+            <select
+              v-model="newConnection.to"
+              class="form-select"
+              id="connectionTo"
+            >
+              <option value="">Select destination</option>
+              <option v-for="station in assemblyStations" :value="station.name">
+                {% raw %}{{ station.name }}{% endraw %}
+              </option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label for="connectionQuantity" class="form-label">Quantity</label>
+            <input
+              v-model.number="newConnection.quantity"
+              type="number"
+              class="form-control"
+              id="connectionQuantity"
+              min="1"
+            />
+          </div>
+          <button class="btn btn-primary mb-3" @click="addConnection">
+            Add Connection
+          </button>
+
+          <ul class="list-group">
+            <li
+              v-for="(connection, index) in connections"
+              :key="index"
+              class="list-group-item d-flex justify-content-between align-items-center"
+            >
+              {% raw %}{{ connection.from }} -> {{ connection.to }} (Quantity:
+              {{ connection.quantity }}){% endraw %}
+              <button
+                @click="deleteConnection(index)"
+                class="btn btn-danger btn-sm"
+              >
+                <i class="bi bi-trash"
+                  ><img
+                    src="{{ url_for('static', filename='image/trash.png') }}"
+                    alt="Delete"
+                /></i>
+              </button>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <button class="btn btn-primary mt-3 w-100" @click="generateFactory">
+      Generate Factory
+    </button>
+    <pre class="mt-3" v-if="factoryJson">
+    {% raw %}{{ factoryJson }}{% endraw %}</pre
+    >
+    <div class="mb-3"></div>
+    <div class="mb-3">Step 2: Define Workers</div>
+    <div class="accordion-item">
+      <h2 class="accordion-header">
+        <button
+          class="accordion-button collapsed"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#workersCollapse"
+        >
+          Workers
+        </button>
+      </h2>
+      <div
+        id="workersCollapse"
+        class="accordion-collapse collapse"
+        data-bs-parent="#factoryAccordion"
+      >
+        <div class="accordion-body">
+          <div class="mb-3">
+            <label for="workerCount" class="form-label"
+              >Number of Workers</label
+            >
+            <input
+              v-model.number="workerDefinition.count"
+              type="number"
+              class="form-control"
+              id="workerCount"
+              min="1"
+            />
+          </div>
+          <div class="mb-3">
+            <label for="skillDistribution" class="form-label"
+              >Skill Distribution (0-1)</label
+            >
+            <input
+              v-model.number="workerDefinition.skillDistribution"
+              type="range"
+              class="form-range"
+              id="skillDistribution"
+              min="0"
+              max="1"
+              step="0.1"
+            />
+            <small class="form-text text-muted">
+              {% raw %}{{ workerDefinition.skillDistribution }}{% endraw %} (0:
+              biased towards no skill, 0.5: normal distribution, 1: biased
+              towards perfect skill)
+            </small>
+          </div>
+          <button
+            class="btn btn-primary mt-3"
+            @click="createAndGenerateWorkers"
+          >
+            Create/Update Worker
+          </button>
+          <button class="btn btn-primary mt-3" @click="saveWorkers">
+            Save Worker Config
+          </button>
+
+          <div v-if="workers.length > 0" class="mt-3">
+            <h5>Defined Workers:</h5>
+            <p>Number of workers: {% raw %}{{ workers.length }}{% endraw %}</p>
+            <p>
+              Skill distribution: {% raw %}{{ workerDefinition.skillDistribution
+              }}{% endraw %}
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="mt-3">Step 3: Run Simulation</div>
+    <div class="mb-3">
+      <label for="demandInput" class="form-label">Demand</label>
+      <input
+        v-model.number="demand"
+        type="number"
+        class="form-control"
+        id="demandInput"
+        min="1"
+      />
+    </div>
+    <button
+      class="btn btn-primary mt-3 w-100"
+      @click="runSimulation"
+      :disabled="simulationRunning"
+    >
+      Run Simulation
+    </button>
+    <div class="mb-3"></div>
+    <div class="accordion-item">
+      <h2 class="accordion-header">
+        <button
+          class="accordion-button collapsed"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#simulationResultsCollapse"
+        >
+          Simulation Results
+        </button>
+      </h2>
+      <div
+        id="simulationResultsCollapse"
+        class="accordion-collapse collapse"
+        data-bs-parent="#factoryAccordion"
+      >
+        <div class="accordion-body">
+          <div v-if="simulationResults">
+            <div class="mb-3">
+              <strong>Simulation Time:</strong> {% raw %}{{
+              simulationResults.simulation_time.toFixed(2) }}{% endraw %}
+            </div>
+            <div class="mb-3">
+              <strong>Products Produced:</strong> {% raw %}{{
+              simulationResults.products_produced }}{% endraw %}
+            </div>
+            <div class="mb-3">
+              <strong>Maximum WIP Levels:</strong>
+              <ul class="list-group">
+                <li
+                  v-for="(level, item) in simulationResults.max_wip_levels"
+                  :key="item"
+                  class="list-group-item"
+                >
+                  {% raw %}{{ item }}: {{ level }}{% endraw %}
+                </li>
+              </ul>
+            </div>
+            <div class="mb-3">
+              <strong>Total WIPs Produced:</strong>
+              <ul class="list-group">
+                <li
+                  v-for="(count, station) in simulationResults.total_wips_produced"
+                  :key="station"
+                  class="list-group-item"
+                >
+                  {% raw %}{{ station }}: {{ count }}{% endraw %}
+                </li>
+              </ul>
+            </div>
+            <div class="mb-3">
+              <strong>Scrap Counts:</strong>
+              <ul class="list-group">
+                <li
+                  v-for="(count, station) in simulationResults.scrap_counts"
+                  :key="station"
+                  class="list-group-item"
+                >
+                  {% raw %}{{ station }}: {{ count }}{% endraw %}
+                </li>
+              </ul>
+            </div>
+            <div class="mb-3">
+              <strong>Rework Counts:</strong>
+              <ul class="list-group">
+                <li
+                  v-for="(count, station) in simulationResults.rework_counts"
+                  :key="station"
+                  class="list-group-item"
+                >
+                  {% raw %}{{ station }}: {{ count }}{% endraw %}
+                </li>
+              </ul>
+            </div>
+            <div class="mb-3">
+              <strong>Station Active Times:</strong>
+              <ul class="list-group">
+                <li
+                  v-for="(time, station) in simulationResults.station_active_times"
+                  :key="station"
+                  class="list-group-item"
+                >
+                  {% raw %}{{ station }}: {{ time.toFixed(2) }}{% endraw %}
+                </li>
+              </ul>
+            </div>
+          </div>
+          <div v-else>
+            No simulation results available. Run a simulation to see results
+            here.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,47 @@
+<div id="factory-floor">
+  <div id="factory-floor-content">
+    <svg id="connections"></svg>
+    <div
+      class="inventory-item bg-primary rounded"
+      v-for="item in inventory"
+      :key="'inv-'+item"
+      :id="'inv-'+item"
+      @contextmenu="showEditPopup($event, item)"
+    >
+      {% raw %}{{ item }}{% endraw %}
+    </div>
+    <div
+      class="station bg-info rounded"
+      v-for="station in assemblyStations"
+      :key="station.name"
+      :id="station.name"
+      :style="{ height: station.height + 'px' }"
+      @contextmenu="showEditPopup($event, station)"
+    >
+      {% raw %}{{ station.name }}{% endraw %}
+    </div>
+    <div
+      v-if="workerBlock"
+      class="worker-block bg-warning rounded"
+      :id="workerBlock.id"
+      :style="{ 
+            position: 'absolute',
+            left: workerBlock.x + 'px', 
+            top: workerBlock.y + 'px', 
+            width: workerBlock.width + 'px', 
+            height: workerBlock.height + 'px' 
+        }"
+      @contextmenu="showEditPopup($event, 'worker-block')"
+    >
+      Workers
+    </div>
+    <edit-popup
+      v-if="editPopup.show"
+      :item="editPopup.item"
+      :type="editPopup.type"
+      @save="saveEditedItem"
+      @cancel="hideEditPopup"
+      @delete="deleteItem"
+    ></edit-popup>
+  </div>
+</div>
