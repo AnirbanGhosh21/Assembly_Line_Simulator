@@ -69,14 +69,14 @@ document.addEventListener('DOMContentLoaded', function() {
 
                 // Swap images
                 const cornerImage = document.getElementById('corner-image');
-                const logoImage = document.getElementById('logo-image');
+                // const logoImage = document.getElementById('logo-image');
 
                 if (this.darkMode) {
                     cornerImage.src = window.imageUrls.velDark;
-                    logoImage.src = window.imageUrls.logoDark;
+                    // logoImage.src = window.imageUrls.logoDark;
                 } else {
                     cornerImage.src = window.imageUrls.velLight;
-                    logoImage.src = window.imageUrls.logoLight;
+                    // logoImage.src = window.imageUrls.logoLight;
                 }
 
                 // Reinitialize accordions
