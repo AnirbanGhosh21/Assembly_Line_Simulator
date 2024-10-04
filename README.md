@@ -57,5 +57,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## Acknowledgments
 
-- Thanks to all contributors who have helped shape FlowForge.
 - Built with Flask, Vue.js, and SimPy.
