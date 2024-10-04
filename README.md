@@ -47,14 +47,6 @@ FlowForge is a web-based factory simulation and optimization tool that allows us
 4. **Analyze Results**:
    - View detailed simulation results, including production metrics, WIP levels, and station performance.
 
-## Contributing
-
-We welcome contributions to FlowForge! Please read our [Contributing Guide](CONTRIBUTING.md) for more information on how to get started.
-
-## License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
 ## Acknowledgments
 
 - Built with Flask, Vue.js, and SimPy.
